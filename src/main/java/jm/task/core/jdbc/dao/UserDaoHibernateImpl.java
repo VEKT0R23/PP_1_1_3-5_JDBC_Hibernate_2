@@ -1,25 +1,23 @@
 package jm.task.core.jdbc.dao;
 
+import com.mysql.cj.jdbc.DatabaseMetaData;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
-    private static final SessionFactory sessionF = Util.getSessionFactory();
-    public UserDaoHibernateImpl() {
-
-    }
-
 
     @Override
     public void createUsersTable() {
         Transaction transaction = null;
-        try (Session session = sessionF.openSession()){
+        try (Session session = Util.getSessionFactory().openSession()){
             transaction = session.beginTransaction();
             String sql = "CREATE TABLE IF NOT EXISTS users" +
                     "(id BIGINT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(50), lastName VARCHAR(50), age INT)";
@@ -37,11 +35,11 @@ public class UserDaoHibernateImpl implements UserDao {
     }
 
     @Override
-    public void dropUsersTable() {
+    public void dropUsersTable(String nameTable) {
         Transaction transaction = null;
-        try (Session session = sessionF.openSession()){
+        try (Session session = Util.getSessionFactory().openSession()){
             transaction = session.beginTransaction();
-            String sql = "DROP TABLE IF EXISTS users";
+            String sql = "DROP TABLE IF EXISTS "+nameTable+"";
             session.createSQLQuery(sql).executeUpdate();
             transaction.commit();
             System.out.println("Таблица удалена");
@@ -57,7 +55,7 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public void saveUser(String name, String lastName, byte age) {
         Transaction transaction = null;
-        try (Session session = sessionF.openSession()){
+        try (Session session = Util.getSessionFactory().openSession()){
             transaction = session.beginTransaction();
             String sql = "INSERT INTO users (name, lastName, age) VALUES ('"+name+"','"+lastName+"','"+age+"')";
             session.createSQLQuery(sql).executeUpdate();
@@ -75,9 +73,9 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public void removeUserById(long id) {
         Transaction transaction;
-        try (Session session = sessionF.openSession()){
+        try (Session session = Util.getSessionFactory().openSession()){
             transaction = session.beginTransaction();
-            String sql = "DELETE FROM users WHERE id = :id";
+            String sql = "DELETE FROM users WHERE id = "+id+"";
             session.createSQLQuery(sql).executeUpdate();
             transaction.commit();
             System.out.println("User удален");
@@ -90,29 +88,24 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public List<User> getAllUsers() {
         List<User> userList = new ArrayList<>();
-        Transaction transaction = null;
-        try (Session session = sessionF.openSession()) {
-            transaction = session.beginTransaction();
+        Transaction transaction5;
+        try (Session session = Util.getSessionFactory().openSession()) {
+            transaction5 = session.beginTransaction();
             userList = session.createQuery("FROM User").list();
-            transaction.commit();
-            System.out.println("Все User-ы получены");
+            transaction5.commit();
+            System.out.println("Список пользователей успешно получен.");
             return userList;
         } catch (HibernateException e) {
-            e.printStackTrace();
-            if (transaction != null) {
-                transaction.rollback();
-                System.out.println("Не удалось получить User-ов");
-            }
+            throw new HibernateException("Не удалось получить User-ов", e);
         }
-        return null;
     }
 
     @Override
     public void cleanUsersTable() {
         Transaction transaction = null;
-        try (Session session = sessionF.openSession()){
+        try (Session session = Util.getSessionFactory().openSession()){
             transaction = session.beginTransaction();
-            String sql = "TRUNCATE TABLE users;";
+            String sql = "TRUNCATE TABLE users";
             session.createSQLQuery(sql).executeUpdate();
             transaction.commit();
             System.out.println("Таблица очищена");

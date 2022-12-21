@@ -7,7 +7,7 @@ import java.util.List;
 public interface UserDao {
     void createUsersTable();
 
-    void dropUsersTable();
+    void dropUsersTable(String nameTable);
 
     void saveUser(String name, String lastName, byte age);
 

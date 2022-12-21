@@ -12,7 +12,7 @@ public class UserDaoJDBCImpl implements UserDao {
     public void createUsersTable() {
     }
 
-    public void dropUsersTable() {
+    public void dropUsersTable(String nameTable) {
     }
 
     public void saveUser(String name, String lastName, byte age) {

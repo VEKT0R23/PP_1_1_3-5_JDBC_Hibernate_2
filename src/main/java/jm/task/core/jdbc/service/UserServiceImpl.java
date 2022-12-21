@@ -8,7 +8,7 @@ import java.util.List;
 
 public class UserServiceImpl implements UserService {
 
-    UserDao userDaoHibernate = new UserDaoHibernateImpl();
+    private final UserDao userDaoHibernate = new UserDaoHibernateImpl();
 
     @Override
     public void createUsersTable() {
@@ -16,8 +16,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void dropUsersTable() {
-        userDaoHibernate.dropUsersTable();
+    public void dropUsersTable(String nameTable) {
+        userDaoHibernate.dropUsersTable(nameTable);
     }
 
     @Override
