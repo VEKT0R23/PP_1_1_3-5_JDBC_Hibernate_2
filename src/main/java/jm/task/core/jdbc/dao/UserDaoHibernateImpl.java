@@ -115,12 +115,12 @@ public class UserDaoHibernateImpl implements UserDao {
             String sql = "TRUNCATE TABLE users;";
             session.createSQLQuery(sql).executeUpdate();
             transaction.commit();
-            System.out.println("User создан");
+            System.out.println("Таблица очищена");
         } catch (HibernateException e) {
             e.printStackTrace();
             if (transaction != null) {
                 transaction.rollback();
-                System.out.println("User не создан");
+                System.out.println("Таблица не очищена");
             }
         }
     }
