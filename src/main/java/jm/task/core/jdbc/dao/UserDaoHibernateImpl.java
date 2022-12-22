@@ -93,7 +93,7 @@ public class UserDaoHibernateImpl implements UserDao {
             transaction5 = session.beginTransaction();
             userList = session.createQuery("FROM User").list();
             transaction5.commit();
-            System.out.println("Список пользователей успешно получен.");
+            System.out.println("Список User-ов успешно получен.");
             return userList;
         } catch (HibernateException e) {
             throw new HibernateException("Не удалось получить User-ов", e);
